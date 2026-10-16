@@ -1,4 +1,4 @@
-ARMALIFE STOK SORGULAMA — KURULUM (sürüm 3)
+ARMALIFE STOK SORGULAMA — KURULUM (sürüm 3.1)
 ===========================================
 
 Adres:  https://uygulamaarma.github.io/

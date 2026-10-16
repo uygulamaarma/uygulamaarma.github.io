@@ -198,7 +198,7 @@ button{cursor:pointer}
 <main class="icerik">
   <section class="kart">
     <form class="arama" id="aramaForm" autocomplete="off">
-      <input id="aramaGirdi" type="search" placeholder="Barkod, stok kodu veya model no" enterkeyhint="search" autocapitalize="characters" spellcheck="false">
+      <input id="aramaGirdi" name="urunara" type="text" inputmode="text" placeholder="Barkod, stok kodu veya model no" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" data-lpignore="true" data-form-type="other">
       <button class="btn btn-mavi" type="submit">SORGULA</button>
     </form>
     <button class="btn btn-acik btn-blok" id="kameraBtn" type="button">
@@ -279,10 +279,14 @@ button{cursor:pointer}
     </section>
 
     <section class="kart">
-      <div class="etiket">Excel sütunları</div>
-      <div class="kucuk"><b>KAMPANYA LİSTESİ:</b> <b>Stok Kodu</b> sütunu ve hemen yanındaki açıklama sütunu. Açıklamada ne yazıyorsa (ör. "1 ALANA 1 BEDAVA", "1 + 1") ürün okutulunca aynen gösterilir.<br><br><b>MAĞAZA STOK:</b> Barkod, Stok Kodu, Stok Adı, Renk Adı, Beden, Fiili Stok Adet, Transfer Stok Adet, Perakende Satış Fiyatı Kdvsiz, Stok Yeri Ünvan. Birden fazla mağazanın dosyası birlikte seçilebilir.</div>
+      <div class="etiket">Mağaza stok dosyası</div>
+      <div class="kucuk" style="font-size:14px;color:var(--yazi)">Mağaza stok yükleme datasında <b>Stok Kodu – Stok Adı – Renk – Beden – Fiili Stok – Barkod – Perakende Satış</b> bilgileri olmalıdır.</div>
       <div class="ayar-satir" style="margin-top:10px;border-top:1px solid var(--cizgi);padding-top:12px;align-items:center"><span>KDV oranı (Kdvsiz fiyattan satış fiyatı)</span><span><input id="kdvGirdi" type="number" inputmode="decimal" min="0" max="50" step="1" value="10" style="width:64px;height:38px;border:1.5px solid var(--cizgi);border-radius:10px;text-align:center;font-weight:700"> %</span></div>
       <button class="btn btn-blok" id="veriSilBtn" type="button" style="background:#fdeceb;color:var(--kirmizi-koyu)">Bu telefondaki veriyi sil</button>
+    </section>
+    <section class="kart">
+      <div class="etiket">Kamera izni</div>
+      <div id="kamIzinBilgi" class="kucuk" style="font-size:14px;color:var(--yazi);margin-top:6px"></div>
     </section>
     <div class="alt-bilgi">ArmaLife Stok Sorgulama · Sürüm <span id="surum"></span></div>
   </div>
@@ -301,7 +305,7 @@ button{cursor:pointer}
 <script>
 (function () {
 'use strict';
-var SURUM = '3.0.0';
+var SURUM = '3.1.0';
 var $ = function (id) { return document.getElementById(id); };
 $('surum').textContent = SURUM;
 
@@ -374,6 +378,8 @@ var V = { stok: null, kampanya: null };
 var IDX = { barkod: new Map(), model: new Map(), modelListe: [] };
 var magaza = null; // seçili mağaza adı
 var aktif = null;  // ekrandaki sorgu {tip, ...}
+var GORUNEN_AD = 'ARMA LİFE'; // şimdilik mağaza adı yerine gösterilen ad
+function magazaGorunen() { return V.stok && V.stok.magazalar.length > 1 ? (magaza || 'Mağaza seçin') : GORUNEN_AD; }
 
 function dizinKur() {
   IDX.barkod = new Map(); IDX.model = new Map(); IDX.modelListe = [];
@@ -423,11 +429,15 @@ function bedenKarsilastir(a, b) {
 }
 
 /* ---------------- Sorgulama ---------------- */
+// 13 haneli barkodu "255 0003711512" biçiminde göster
+function barkodGoster(d) { return /^\d{13}$/.test(d) ? d.slice(0, 3) + ' ' + d.slice(3) : d; }
 function sorgula(girdi, kaynak) {
   var ham = String(girdi || '').trim();
   if (!ham) { durum('Barkod veya stok kodu girin.', 'hata'); return; }
   if (!V.stok && !V.kampanya) { durum('Henüz veri yüklenmedi. Önce KAMPANYA LİSTESİ ve MAĞAZA STOK dosyalarını yükleyin.', 'hata'); return; }
-  $('aramaGirdi').value = ham;
+  // Sadece rakam + ( ) - . boşluk içeriyorsa (ör. telefonun "(255)0003711512" biçimi) rakamlara indir
+  if (/^[\d\s()\-.+]+$/.test(ham)) ham = ham.replace(/\D/g, '');
+  $('aramaGirdi').value = barkodGoster(ham);
   var sade = ham.replace(/\s+/g, '');
 
   // 1) Barkod
@@ -530,7 +540,7 @@ function goster(s, kaynak, ham) {
   }
   h += '<div class="kodlar">Stok kodu: <b>' + kacis(m[2]) + '</b>' + (s.tip === 'urun' ? ' · Barkod: <b>' + kacis(V.stok.urunler[s.ui][0]) + '</b>' : '') + (m[4] ? ' · ' + kacis(m[4]) : '') + '</div></section>';
 
-  h += '<section class="kart"><div class="etiket">Renk ve beden stokları · ' + kacis(magaza || '') + '</div>';
+  h += '<section class="kart"><div class="etiket">Renk ve beden stokları · ' + kacis(magazaGorunen()) + '</div>';
   renkSira.forEach(function (r) {
     var R = renkler[r];
     R.bedenler.sort(function (a, b) { return bedenKarsilastir(a.beden, b.beden); });
@@ -609,7 +619,7 @@ function magazaGuncelle() {
   if (!magaza) magaza = ls('magaza');
   if (magaza && liste.indexOf(magaza) < 0) magaza = null;
   if (!magaza && liste.length === 1) { magaza = liste[0]; ls('magaza', magaza); }
-  $('magazaAd').textContent = magaza || (liste.length ? 'Mağaza seçin' : 'Veri yok');
+  $('magazaAd').textContent = liste.length ? magazaGorunen() : 'Veri yok';
   if (!magaza && liste.length > 1) magazaSec();
 }
 function magazaSec() {
@@ -627,7 +637,7 @@ document.addEventListener('click', function (e) {
   var mdl = e.target.classList && e.target.classList.contains('modal') ? e.target : null; if (mdl) { modalKapat(mdl.id); return; }
   var k = e.target.closest('[data-kod]'); if (k) { goster({ tip: 'model', kodK: k.getAttribute('data-kod') }, 'liste', k.getAttribute('data-kod')); return; }
   var g = e.target.closest('[data-gecmis]'); if (g) { sorgula(g.getAttribute('data-gecmis'), 'gecmis'); return; }
-  var mg = e.target.closest('[data-magaza]'); if (mg) { magaza = mg.getAttribute('data-magaza'); ls('magaza', magaza); $('magazaAd').textContent = magaza; modalKapat('magazaModal'); yenidenCiz(); toast('Mağaza: ' + magaza); }
+  var mg = e.target.closest('[data-magaza]'); if (mg) { magaza = mg.getAttribute('data-magaza'); ls('magaza', magaza); $('magazaAd').textContent = magazaGorunen(); modalKapat('magazaModal'); yenidenCiz(); toast('Mağaza: ' + magaza); }
 });
 function yenidenCiz() {
   if (!aktif) return;
@@ -667,14 +677,14 @@ function veriDurumCiz() {
   if (V.stok) {
     h += '<div class="ayar-satir"><span>Stok verisi</span><span>' + tarihFmt(V.stok.tarih) + '</span></div>' +
       '<div class="ayar-satir"><span>Barkod / model</span><span>' + V.stok.urunler.length.toLocaleString('tr-TR') + ' / ' + Object.keys(V.stok.modeller).length.toLocaleString('tr-TR') + '</span></div>' +
-      '<div class="ayar-satir"><span>Mağazalar</span><span>' + kacis(V.stok.magazalar.join(', ')) + '</span></div>' +
-      '<div class="ayar-satir"><span>Kaynak</span><span>' + kacis(V.stok.kaynak || '') + '</span></div>';
+      '<div class="ayar-satir"><span>Mağaza</span><span>' + kacis(magazaGorunen()) + '</span></div>';
   } else h += '<div class="ayar-satir"><span>Stok verisi</span><span style="color:var(--kirmizi-koyu)">Yok</span></div>';
   if (V.kampanya) {
     h += '<div class="ayar-satir"><span>Kampanya listesi</span><span>' + tarihFmt(V.kampanya.tarih) + '</span></div>' +
       '<div class="ayar-satir"><span>Kampanyalı stok kodu</span><span>' + V.kampanya.adet.toLocaleString('tr-TR') + '</span></div>';
   } else h += '<div class="ayar-satir"><span>Kampanya listesi</span><span style="color:var(--kirmizi-koyu)">Yok</span></div>';
   $('veriDurum').innerHTML = h;
+  $('kamIzinBilgi').innerHTML = izinMetni();
   $('kdvGirdi').value = ls('kdv') || (V.stok && V.stok.kdv != null ? V.stok.kdv : 10);
 }
 
@@ -897,9 +907,18 @@ function kameraAc() {
   tMesaj(null);
   $('cerceve').classList.remove('bulundu');
   document.body.style.overflow = 'hidden';
+  clearTimeout(T.bekleZ);
+  // Kamera zaten açıksa (son okutmadan) yeniden izin istemeden devam et
+  if (akisCanli()) {
+    var v = $('video'), oy = v.play(); if (oy && oy.catch) oy.catch(function () {});
+    T.calisiyor = true; T.kare = 0; T.hataSay = 0; T.okumalar = {};
+    clearTimeout(T.zamanlayici); T.zamanlayici = setTimeout(dongu, 150);
+    detektorAl().catch(function (e) { console.warn(e); });
+    return;
+  }
   // Kullanıcı dokunuşu içinde kamerayı hemen iste (iOS için önemli)
   var kayitli = ls('kamera');
-  akisBaslat(kayitli).catch(function (e) { kameraHatasi(e); });
+  akisBaslat(kayitli).then(izinIpucu).catch(function (e) { kameraHatasi(e); });
   // dedektörü paralel hazırla
   detektorAl().catch(function (e) { console.warn(e); });
 }
@@ -968,6 +987,18 @@ $('fenerBtn').addEventListener('click', function () {
   T.track.applyConstraints({ advanced: [{ torch: T.fener }] }).then(function () { $('fenerBtn').classList.toggle('aktif', T.fener); }).catch(function () { T.fener = false; toast('Fener açılamadı'); });
 });
 
+var IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var IOS_CHROME = IOS && /CriOS/.test(navigator.userAgent);
+function izinMetni() {
+  if (IOS && IOS_CHROME) return 'Her seferinde sorulmaması için: iPhone\'da bu programı <b>Safari</b> ile açıp <b>Ana Ekrana Ekle</b> yapmanızı öneririz. Safari\'de adres çubuğundaki <b>sayfa menüsü (aA / ☰)</b> → <b>Web Sitesi Ayarları</b> → <b>Kamera: İzin Ver</b> seçin.';
+  if (IOS) return 'Her seferinde sorulmaması için: Safari\'de adres çubuğundaki <b>sayfa menüsü (aA / ☰)</b> → <b>Web Sitesi Ayarları</b> → <b>Kamera: İzin Ver</b> seçin. Ya da telefonun <b>Ayarlar → Uygulamalar → Safari → Kamera → İzin Ver</b>.';
+  return 'Bir kez "İzin ver" dediğinizde Chrome hatırlar, tekrar sormaz. Sorarsa adres çubuğundaki simge → İzinler → Kamera → İzin ver.';
+}
+function izinIpucu() {
+  if (!IOS || ls('kamIpucu')) return;
+  ls('kamIpucu', '1');
+  setTimeout(function () { toast('İpucu: Kamera izninin her seferinde sorulmaması için ⚙ Ayarlar → "Kamera izni" bölümüne bakın.', 6000); }, 1500);
+}
 function kameraHatasi(e) {
   console.warn('kamera hatası', e);
   var ad = e && e.name;
@@ -994,13 +1025,28 @@ function akisDurdur() {
   T.stream = null; T.track = null;
   var v = $('video'); try { v.pause(); } catch (e) {} v.srcObject = null;
 }
-function tarayiciKapat() {
+function tarayiciKapat() { // kamerayı tamamen kapatır
+  clearTimeout(T.bekleZ);
   akisDurdur();
   $('tarayici').classList.add('gizli');
   tMesaj(null);
   document.body.style.overflow = '';
 }
-$('kapatBtn').addEventListener('click', tarayiciKapat);
+// Okutma bitince kamera ekranını gizle ama kamerayı birkaç dakika açık tut:
+// böylece sonraki okutmada telefon tekrar izin sormaz ve kamera anında açılır.
+var KAMERA_BEKLE_MS = 5 * 60 * 1000;
+function tarayiciGizle() {
+  T.calisiyor = false; clearTimeout(T.zamanlayici);
+  try { $('video').pause(); } catch (e) {}
+  if (T.fener && T.track) { T.fener = false; T.track.applyConstraints({ advanced: [{ torch: false }] }).catch(function () {}); }
+  $('tarayici').classList.add('gizli');
+  tMesaj(null);
+  document.body.style.overflow = '';
+  clearTimeout(T.bekleZ);
+  if (T.stream) T.bekleZ = setTimeout(function () { if ($('tarayici').classList.contains('gizli')) akisDurdur(); }, KAMERA_BEKLE_MS);
+}
+function akisCanli() { return !!(T.stream && T.track && T.track.readyState === 'live'); }
+$('kapatBtn').addEventListener('click', tarayiciGizle);
 document.addEventListener('visibilitychange', function () { if (document.hidden && T.stream) tarayiciKapat(); });
 
 // Ekrandaki çerçevenin video karesindeki karşılığını hesapla (object-fit: cover)
@@ -1096,7 +1142,7 @@ function okundu(deger) {
   $('cerceve').classList.add('bulundu');
   bip(1800, 0.09); // okundu sesi (kamera kapanmadan hemen)
   setTimeout(function () {
-    tarayiciKapat();
+    tarayiciGizle();
     sorgula(deger, 'kamera');
   }, 140);
 }
@@ -1150,6 +1196,10 @@ $('fotoGirdi').addEventListener('change', function () {
 });
 
 /* ---------------- Olaylar ---------------- */
+$('aramaGirdi').addEventListener('input', function () {
+  var v = this.value;
+  if (/[()]/.test(v) && /^[\d\s()\-.+]+$/.test(v)) this.value = v.replace(/[()]/g, '');
+});
 $('aramaForm').addEventListener('submit', function (e) { e.preventDefault(); sesHazirla(); $('aramaGirdi').blur(); sorgula($('aramaGirdi').value, 'elle'); });
 $('kameraBtn').addEventListener('click', kameraAc);
 $('sabitKameraBtn').addEventListener('click', kameraAc);
