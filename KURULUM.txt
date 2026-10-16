@@ -1,4 +1,4 @@
-ARMALIFE STOK SORGULAMA — KURULUM (sürüm 3.1)
+ARMALIFE STOK SORGULAMA — KURULUM (sürüm 3.2)
 ===========================================
 
 Adres:  https://uygulamaarma.github.io/
@@ -8,8 +8,10 @@ Bu klasörde yalnızca PROGRAM vardır. Stok ve kampanya verisi internete konmaz
 her telefona iki Excel ile yüklenir:
   1) KAMPANYA LİSTESİ  : Stok Kodu + hemen yanındaki açıklama sütunu.
                          Açıklamada ne yazıyorsa (1 ALANA 1 BEDAVA, 1 + 1, %30 İNDİRİM...) aynen gösterilir.
-  2) MAĞAZA STOK       : Nebim stok raporu (Barkod, Stok Kodu, Stok Adı, Renk Adı, Beden,
-                         Fiili Stok Adet, Transfer Stok Adet, Perakende Satış Fiyatı Kdvsiz, Stok Yeri Ünvan).
+  2) MAĞAZA STOK       : Nebim stok raporu (Stok Kodu, Stok Adı, Cinsiyet Adı, Ana Grup Adı, Klasman Adı,
+                         Sezon Bilgisi Adı, Renk Adı, Beden, Fiili Stok Adet, Transfer Stok Adet,
+                         Perakende Satış Fiyatı Kdvli, Barkod).
+  Yükledikten sonra VERİYİ KAYDET: veri silinene kadar telefonda kalır.
 
 PROGRAMI GÜNCELLEMEK (GitHub)
   1. github.com'a "uygulamaarma" hesabıyla girin → uygulamaarma.github.io deposu.

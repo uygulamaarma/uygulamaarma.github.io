@@ -1,5 +1,5 @@
 /* ArmaLife Stok Sorgulama — çevrimdışı önbellek. Önce ağ, olmazsa önbellek. */
-var ONBELLEK = 'armastok-v4';
+var ONBELLEK = 'armastok-v5';
 var KABUK = ['./', 'index.html', 'lib/veri.js', 'lib/okuyucu.min.js', 'lib/zxing_reader.wasm', 'lib/xlsx.full.min.js', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(ONBELLEK).then(function (c) { return c.addAll(KABUK); }).catch(function () {}).then(function () { return self.skipWaiting(); }));

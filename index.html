@@ -173,6 +173,44 @@ button{cursor:pointer}
 .yukle-btn.isleniyor{opacity:.7;pointer-events:none}
 .veri-baslik{display:flex;justify-content:space-between;align-items:center}
 .veri-baslik .ipucu-k{font-size:12px;color:var(--soluk)}
+/* Ürün kimlik kartı (tek ekranda, kaydırmadan) */
+.kimlik{background:var(--kart);border-radius:var(--r);box-shadow:var(--golge);overflow:hidden;margin-bottom:12px}
+.k-serit{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--kirmizi);color:#fff}
+.k-serit svg{width:26px;height:26px;flex:none}
+.k-serit .ks-ust{font-size:10.5px;font-weight:800;letter-spacing:.14em;opacity:.9}
+.k-serit .ks-yazi{font-size:19px;font-weight:900;line-height:1.15}
+.k-serit.yok{background:#eef1f6;color:var(--soluk)}
+.k-serit.yok .ks-yazi{font-size:15px;color:var(--yazi);font-weight:800}
+.k-serit.var{animation:nabiz 1.6s ease-in-out 2}
+.k-govde{padding:10px 14px 12px}
+.k-ad{font-size:16px;font-weight:800;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.k-uc{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:6px;margin-top:9px}
+.k-uc>div{border-radius:11px;background:#f3f6fb;padding:7px 9px;min-width:0}
+.k-uc .e{font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--soluk);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-uc .d{font-size:21px;font-weight:900;color:var(--lacivert);letter-spacing:-.02em;line-height:1.15;white-space:nowrap}
+.k-uc .d small{font-size:12px;font-weight:700;color:var(--soluk)}
+.k-uc .stokk{background:var(--mavi-acik)}
+.k-uc .stokk.sifir{background:#fdeceb}.k-uc .stokk.sifir .d{color:var(--kirmizi-koyu)}
+.k-izgara{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;margin-top:8px}
+.k-izgara>div{padding:5px 0;border-bottom:1px solid var(--cizgi);min-width:0}
+.k-izgara .e{font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--soluk);text-transform:uppercase}
+.k-izgara .d{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-izgara .tam{grid-column:1/-1}
+.k-dip{font-size:12px;color:var(--soluk);margin-top:7px}
+.k-dip b{color:var(--yazi)}
+.renkler-kart{padding:12px 14px}
+.renkler-kart .renk{margin-top:8px;padding:9px 12px}
+.renkler-kart .bedenler{margin-top:6px}
+/* Kayıt */
+.kaydet-btn{width:100%;margin-top:10px;height:52px;border:0;border-radius:14px;background:var(--yesil);color:#fff;font-weight:900;font-size:15.5px;display:flex;align-items:center;justify-content:center;gap:8px}
+.kaydet-btn svg{width:22px;height:22px}
+.kayit-ozet{display:flex;align-items:center;gap:12px}
+.kayit-ozet .ko-ikon{width:44px;height:44px;border-radius:12px;background:var(--yesil);color:#fff;display:grid;place-items:center;flex:none}
+.kayit-ozet .ko-ikon svg{width:24px;height:24px}
+.kayit-ozet .ko-baslik{font-weight:900;font-size:14.5px}
+.kayit-ozet .ko-alt{font-size:12.5px;color:var(--soluk);line-height:1.4}
+.kayit-ozet.eski .ko-ikon{background:#d99a00}
+.sil-btn{margin-top:10px;width:100%;height:44px;border:0;border-radius:12px;background:#fdeceb;color:var(--kirmizi-koyu);font-weight:800;font-size:14px}
 .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#101828;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:200;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 </style>
 </head>
@@ -214,8 +252,8 @@ button{cursor:pointer}
   </section>
 
   <section class="kart" id="veriPanel">
-    <div class="veri-baslik"><span class="etiket">Veri yükleme</span><span class="ipucu-k">Excel dosyası seçin</span></div>
-    <div class="yukle-izgara">
+    <div class="veri-baslik"><span class="etiket" id="panelBaslik">Veri yükleme</span><span class="ipucu-k" id="panelIpucu">Excel dosyası seçin</span></div>
+    <div class="yukle-izgara" id="yukleIzgara">
       <label class="yukle-btn kamp-btn" id="kampBtn">
         <span class="yb-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
         <span class="yb-ad">KAMPANYA<br>LİSTESİ</span>
@@ -229,6 +267,12 @@ button{cursor:pointer}
         <input type="file" id="stokGirdi" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/octet-stream" multiple>
       </label>
     </div>
+    <button class="kaydet-btn gizli" id="kaydetBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>VERİYİ KAYDET</button>
+    <div class="kayit-ozet gizli" id="kayitOzet">
+      <div class="ko-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg></div>
+      <div><div class="ko-baslik" id="koBaslik">KAYITLI VERİ</div><div class="ko-alt" id="koAlt"></div></div>
+    </div>
+    <button class="sil-btn gizli" id="kayitSilBtn" type="button">Kaydı sil ve yeni veri yükle</button>
     <div class="durum" id="yukleSonuc"></div>
   </section>
 
@@ -305,7 +349,7 @@ button{cursor:pointer}
 <script>
 (function () {
 'use strict';
-var SURUM = '3.1.0';
+var SURUM = '3.2.0';
 var $ = function (id) { return document.getElementById(id); };
 $('surum').textContent = SURUM;
 
@@ -494,6 +538,10 @@ function modelToplam(kodK) {
   return top;
 }
 
+function kampanyaSerit(kamp) {
+  if (kamp) return '<div class="k-serit var" role="alert"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg><div><div class="ks-ust">KAMPANYALI ÜRÜN</div><div class="ks-yazi">' + kacis(kamp) + '</div></div></div>';
+  return '<div class="k-serit yok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg><div><div class="ks-ust">KAMPANYA</div><div class="ks-yazi">Kampanya yok</div></div></div>';
+}
 function kampanyaHtml(kamp) {
   if (kamp) {
     return '<section class="kampanya var" role="alert"><div class="k-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div>' +
@@ -505,10 +553,10 @@ function kampanyaHtml(kamp) {
 function goster(s, kaynak, ham) {
   aktif = s;
   var kodK = s.kodK, kamp = kampanyaAl(kodK);
-  var h = kampanyaHtml(kamp);
+  var h = '';
 
   if (s.tip === 'sadeceKampanya') {
-    h += '<section class="kart"><div class="etiket">Ürün bilgisi</div><div class="urun-ad">Stok kodu: ' + kacis(kodK) + '</div><div class="not">Bu stok kodu kampanya listesinde var ancak yüklü stok verisinde kaydı yok.</div></section>';
+    h = '<section class="kimlik">' + kampanyaSerit(kamp) + '<div class="k-govde"><div class="k-ad">Stok kodu: ' + kacis(kodK) + '</div><div class="k-dip">Bu stok kodu kampanya listesinde var ancak yüklü stok verisinde kaydı yok.</div></div></section>';
     $('sonuc').innerHTML = h;
     durum('Kampanya listesinde bulundu.', 'ok');
     sonrasi(kaynak, kamp, ham, kodK);
@@ -530,17 +578,31 @@ function goster(s, kaynak, ham) {
   });
   renkSira.sort(function (a, b) { return (renkler[b].adet - renkler[a].adet) || a.localeCompare(b, 'tr'); });
 
-  h += '<section class="kart"><div class="etiket">Ürün bilgisi</div><div class="urun-ad">' + kacis(m[0]) + '</div>';
-  h += '<div class="kutular"><div class="kutu"><div class="etiket">Satış fiyatı</div><div class="deger">' + (m[1] == null ? '—' : kacis(paraFmt.format(m[1])) + ' <small>₺</small>') + '</div></div>' +
-       '<div class="kutu"><div class="etiket">Mağaza stok</div><div class="deger">' + toplam + ' <small>adet</small></div></div></div>';
+  var tek = s.tip === 'urun' ? V.stok.urunler[s.ui] : null;
+  var tekSt = tek ? stokAl(tek, mi) : null;
+  var tekAdet = tek ? (tekSt.f > 0 ? tekSt.f : 0) : toplam;
+  var tekTr = tek ? (tekSt.t > 0 ? tekSt.t : 0) : toplamTr;
+  var hucre = function (e, d, cls) { return '<div' + (cls ? ' class="' + cls + '"' : '') + '><div class="e">' + e + '</div><div class="d">' + (d ? kacis(d) : '—') + '</div></div>'; };
+  var bedenler = []; liste.forEach(function (i) { var b = V.stok.urunler[i][3]; if (b && bedenler.indexOf(b) < 0) bedenler.push(b); });
+  bedenler.sort(bedenKarsilastir);
 
-  if (s.tip === 'urun') {
-    var u = V.stok.urunler[s.ui], st = stokAl(u, mi), adet = st.f > 0 ? st.f : 0;
-    h += '<div class="okutulan' + (adet ? '' : ' sifir') + '"><div class="sol">Okutulan ürün<b>' + kacis(u[2] || '—') + ' · ' + kacis(u[3] || '—') + '</b>' + (st.t > 0 ? '<span style="font-size:12.5px">Transferde ayrıca ' + st.t + ' adet var</span>' : '') + '</div><div class="sag">' + adet + ' adet</div></div>';
-  }
-  h += '<div class="kodlar">Stok kodu: <b>' + kacis(m[2]) + '</b>' + (s.tip === 'urun' ? ' · Barkod: <b>' + kacis(V.stok.urunler[s.ui][0]) + '</b>' : '') + (m[4] ? ' · ' + kacis(m[4]) : '') + '</div></section>';
+  h = '<section class="kimlik">' + kampanyaSerit(kamp) + '<div class="k-govde">';
+  h += '<div class="k-ad">' + kacis(m[0]) + '</div>';
+  h += '<div class="k-uc">' +
+    '<div><div class="e">Fiyat (KDV dahil)</div><div class="d">' + (m[1] == null ? '—' : kacis(paraFmt.format(m[1])) + ' <small>₺</small>') + '</div></div>' +
+    '<div class="stokk' + (tekAdet ? '' : ' sifir') + '"><div class="e">' + (tek ? 'Fiili stok' : 'Toplam stok') + '</div><div class="d">' + tekAdet + ' <small>ad</small></div></div>' +
+    '<div><div class="e">Transfer</div><div class="d">' + tekTr + ' <small>ad</small></div></div>' +
+    '</div>';
+  h += '<div class="k-izgara">' +
+    hucre('Stok kodu', m[2]) + hucre('Barkod', tek ? barkodGoster(tek[0]) : '') +
+    hucre('Renk', tek ? tek[2] : renkSira.length + ' renk') + hucre('Beden', tek ? tek[3] : (bedenler.length ? bedenler[0] + (bedenler.length > 1 ? ' – ' + bedenler[bedenler.length - 1] : '') : '')) +
+    hucre('Cinsiyet', m[3]) + hucre('Ana grup', m[5]) +
+    hucre('Klasman', m[4]) + hucre('Sezon', m[6]) +
+    '</div>';
+  h += '<div class="k-dip">Bu modelde mağazada toplam <b>' + toplam + ' adet</b>' + (toplamTr ? ' (+' + toplamTr + ' transferde)' : '') + ' · ' + renkSira.length + ' renk</div>';
+  h += '</div></section>';
 
-  h += '<section class="kart"><div class="etiket">Renk ve beden stokları · ' + kacis(magazaGorunen()) + '</div>';
+  h += '<section class="kart renkler-kart"><div class="etiket">Renk ve beden stokları</div>';
   renkSira.forEach(function (r) {
     var R = renkler[r];
     R.bedenler.sort(function (a, b) { return bedenKarsilastir(a.beden, b.beden); });
@@ -550,7 +612,7 @@ function goster(s, kaynak, ham) {
     });
     h += '</div></div>';
   });
-  h += '<div class="not">Adetler mağazadaki fiili stoktur' + (toplamTr ? '; yeşil "+ transfer" değerleri yoldaki ürünlerdir' : '') + '. Eksi stok kayıtları 0 gösterilir.</div></section>';
+  h += '<div class="not">Adetler mağazadaki fiili stoktur. Eksi stok kayıtları 0 gösterilir.</div></section>';
 
   // Diğer mağazalar
   if (V.stok.magazalar.length > 1) {
@@ -584,7 +646,7 @@ function sonrasi(kaynak, kamp, ham, kodK) {
   if (kaynak !== 'gecmis' && kaynak !== 'yenile') gecmiseEkle(ham, kodK);
   var hedef = $('sonuc');
   if (kaynak !== 'yenile' && hedef.firstChild) {
-    var y = hedef.getBoundingClientRect().top + window.pageYOffset - 10;
+    var y = hedef.getBoundingClientRect().top + window.pageYOffset - 8;
     window.scrollTo({ top: y, behavior: 'smooth' });
   }
 }
@@ -671,7 +733,22 @@ function panelCiz() {
     sb.classList.add(g >= ESKI_GUN ? 'eski' : 'yuklu');
     $('stokDurum').innerHTML = (g >= ESKI_GUN ? '⚠ ' + g + ' gün önce' : '✓ ' + V.stok.urunler.length.toLocaleString('tr-TR') + ' barkod') + '<br>' + kacis(tarihFmt(V.stok.tarih));
   } else $('stokDurum').textContent = 'Yüklenmedi – dokunun';
+  // Kayıt (kilit) durumu
+  var kilit = kayitliMi() && !!V.stok;
+  $('yukleIzgara').classList.toggle('gizli', kilit);
+  $('kayitOzet').classList.toggle('gizli', !kilit);
+  $('kayitSilBtn').classList.toggle('gizli', !kilit);
+  $('kaydetBtn').classList.toggle('gizli', kilit || !V.stok);
+  $('panelBaslik').textContent = kilit ? 'Kayıtlı veri' : 'Veri yükleme';
+  $('panelIpucu').textContent = kilit ? 'Silinene kadar telefonda kalır' : 'Excel dosyası seçin';
+  if (kilit) {
+    var gg = gunOnce(V.stok.tarih), ko = $('kayitOzet');
+    ko.classList.toggle('eski', gg >= ESKI_GUN);
+    $('koBaslik').textContent = gg >= ESKI_GUN ? '⚠ Veri ' + gg + ' gün önce kaydedildi' : '✓ Veri telefona kaydedildi';
+    $('koAlt').innerHTML = 'Stok: <b>' + V.stok.urunler.length.toLocaleString('tr-TR') + '</b> barkod · Kampanya: <b>' + (V.kampanya ? V.kampanya.adet.toLocaleString('tr-TR') : '0') + '</b> kod<br>' + kacis(tarihFmt(V.stok.tarih));
+  }
 }
+function kayitliMi() { return ls('kayitli') === '1'; }
 function veriDurumCiz() {
   var h = '';
   if (V.stok) {
@@ -761,7 +838,7 @@ function excelYukle(dosyaListesi, tur) {
     return DB.koy('kampanya', k);
   }).then(function () {
     bitir();
-    toast(adi + ' yüklendi.');
+    toast(adi + ' yüklendi.' + (V.stok && V.kampanya && !kayitliMi() ? ' Şimdi VERİYİ KAYDET\'e basın.' : ''));
     if (!aktif) durum(V.stok ? 'Hazır. Barkod okutun veya kod yazın.' : 'Kampanya listesi hazır. Şimdi MAĞAZA STOK dosyasını yükleyin.', V.stok ? '' : 'hata');
     veriDurumCiz(); altBilgiCiz(); gecmisCiz(); yenidenCiz();
   }).catch(function (e) {
@@ -770,16 +847,32 @@ function excelYukle(dosyaListesi, tur) {
     titret([80, 60, 80]);
   });
 }
+$('kaydetBtn').addEventListener('click', function () {
+  if (!V.stok) { toast('Önce MAĞAZA STOK dosyasını yükleyin.'); return; }
+  if (!V.kampanya && !confirm('Kampanya listesi yüklenmedi. Kampanyasız kaydedilsin mi?')) return;
+  Promise.all([DB.koy('stok', V.stok), V.kampanya ? DB.koy('kampanya', V.kampanya) : null]).then(function () {
+    ls('kayitli', '1');
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); } catch (e) {}
+    $('yukleSonuc').className = 'durum ok'; $('yukleSonuc').textContent = '✓ Veri kaydedildi. Siz silene kadar bu telefonda kalır; programı her açtığınızda hazır olur.';
+    toast('Veri kaydedildi.'); panelCiz();
+  });
+});
+$('kayitSilBtn').addEventListener('click', veriyiSil);
+function veriyiSil() {
+  if (!confirm('Kayıtlı stok ve kampanya verisi bu telefondan silinsin mi? Sonra yeni Excel dosyalarını yükleyebilirsiniz.')) return;
+  DB.sil('stok'); DB.sil('kampanya'); ls('kayitli', null);
+  V.stok = null; V.kampanya = null; dizinKur(); aktif = null;
+  $('sonuc').innerHTML = ''; $('yukleSonuc').textContent = '';
+  veriDurumCiz(); altBilgiCiz(); magazaGuncelle(); gecmisCiz(); toast('Veri silindi.');
+  durum('Veri yok. KAMPANYA LİSTESİ ve MAĞAZA STOK dosyalarını yükleyin.', 'hata');
+  modalKapat('ayarModal');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 $('kampGirdi').addEventListener('change', function () { excelYukle(this.files, 'kampanya'); this.value = ''; });
 $('stokGirdi').addEventListener('change', function () { excelYukle(this.files, 'stok'); this.value = ''; });
 $('kdvGirdi').addEventListener('change', function () { ls('kdv', this.value); toast('KDV oranı bir sonraki stok yüklemesinde uygulanır.'); });
 
-$('veriSilBtn').addEventListener('click', function () {
-  if (!confirm('Bu telefondaki stok ve kampanya verisi silinsin mi? Sonra veri dosyasını yeniden yüklemeniz gerekir.')) return;
-  DB.sil('stok'); DB.sil('kampanya'); V.stok = null; V.kampanya = null; dizinKur(); aktif = null;
-  $('sonuc').innerHTML = ''; veriDurumCiz(); altBilgiCiz(); magazaGuncelle(); toast('Veri silindi.');
-  durum('Veri yok. KAMPANYA LİSTESİ ve MAĞAZA STOK dosyalarını yükleyin.', 'hata');
-});
+$('veriSilBtn').addEventListener('click', veriyiSil);
 
 /* ---------------- Barkod tarayıcı ---------------- */
 var ZXO = window.ZXingOkuyucu;
