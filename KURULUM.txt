@@ -1,0 +1,34 @@
+ARMALIFE STOK SORGULAMA — GITHUB PAGES KURULUMU (sürüm 2)
+=========================================================
+
+Bu klasörde yalnızca PROGRAM vardır. Stok ve kampanya verisi YOKTUR;
+veri internete konmaz, her telefona ARMA_VERI_....json dosyasıyla yüklenir.
+
+A) PROGRAMI YAYINLAMA (bir kez)
+  1. github.com'a "uygulamaarma" hesabıyla girin (e-posta: uygulamaarma@gmail.com).
+  2. Sağ üstte "+"  →  "New repository".
+       Repository name: uygulamaarma.github.io   (tam olarak bu ad; adres kök dizin olur)
+       Public seçili kalsın  →  "Create repository".
+  3. Açılan sayfada "uploading an existing file" bağlantısına tıklayın.
+  4. Bu klasörün İÇİNDEKİLERİ (index.html, sw.js, manifest.webmanifest, lib klasörü,
+     icons klasörü, KURULUM.txt) sürükleyip bırakın. Klasörün kendisini değil, içini sürükleyin.
+     →  "Commit changes".
+  5. Depoda "Settings"  →  sol menü "Pages".
+       Source: "Deploy from a branch"   Branch: "main"   Klasör: "/ (root)"  →  "Save".
+  6. 1–2 dakika bekleyin. Adres:  https://uygulamaarma.github.io/
+     Telefonda açıp ekranın geldiğini kontrol edin.
+
+B) VERİ PAKETİ HAZIRLAMA (her güncellemede)
+  1. Bilgisayarda Chrome ile https://uygulamaarma.github.io/ adresini açın.
+  2. Sağ üst ⚙  →  "Veri Dosyası Yükle"  →  stok Excel(ler)i + kampanya Excel'ini birlikte seçin
+     (türleri kendiliğinden tanınır; 18 mağazanın stok dosyası aynı anda seçilebilir).
+  3. "Veri paketini indir"  →  ARMA_VERI_YYYY-AA-GG_SSDD.json iner.
+  4. Bu dosyayı WhatsApp grubu / e-posta ile mağazalara gönderin.
+
+C) MAĞAZA TELEFONU (ayrıntı PDF kılavuzda)
+  Safari / Chrome ile adresi aç  →  Ana Ekrana Ekle  →  simgeden aç  →
+  "Veri Dosyası Yükle" ile ARMA_VERI dosyasını seç  →  BARKOD OKUT.
+
+PROGRAMI GÜNCELLEMEK GEREKİRSE
+  Depoda "Add file" → "Upload files" ile değişen dosyaları yeniden yükleyin.
+  Telefonlar uygulamayı internetliyken açtıklarında yeni sürümü alır; yüklü veri silinmez.
